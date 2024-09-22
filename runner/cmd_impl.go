@@ -47,14 +47,14 @@ func (c *Cmd) DeCompressPath() string {
 	return filepath.Join(c.TempPath, c.User, c.Name)
 }
 
-// InstallPath 解压临时目录
-func (c *Cmd) InstallPath() string {
+// GetInstallPath  安装目录
+func (c *Cmd) GetInstallPath() string {
 	return filepath.Join(c.RootPath, c.User, c.Name)
 }
 
 func (c *Cmd) Chmod() error {
 	if runtime.GOOS != "windows" {
-		cmdPath := filepath.Join(c.InstallPath(), c.Name)
+		cmdPath := filepath.Join(c.GetInstallPath(), c.Name)
 		cmd := exec.Command("chmod", "+x", cmdPath)
 		// 执行命令
 		err := cmd.Run()
@@ -98,7 +98,7 @@ func (c *Cmd) Install(fileStore store.FileStore) (*InstallInfo, error) {
 	} else {
 		compressHome = DeCompressPath
 	}
-	InstallPath := c.InstallPath()
+	InstallPath := c.GetInstallPath()
 	err = osx.CopyDirectory(compressHome, InstallPath)
 	if err != nil {
 		return nil, err
@@ -110,97 +110,8 @@ func (c *Cmd) Install(fileStore store.FileStore) (*InstallInfo, error) {
 		return nil, err
 	}
 	return &c.InstallInfo, nil
-	////absPath = strings.Join([]string{absPath, c.User, c.Name}, "/")
-	//absPath = strings.Join([]string{absPath, c.User}, "/")
-	//unZipOut := absPath + "/" + c.Name
-	//path := strings.Split(c.DownloadPath, "/")
-	//fileName := path[len(path)-1]
-	//
-	//appName := ""
-	//if runtime.GOOS == "windows" {
-	//	//fileName =soft.zip
-	//	appName = strings.Split(fileName, ".")[0] + ".exe"
-	//} else {
-	//	appName = strings.Split(fileName, ".")[0]
-	//}
-	//c.FullName = appName
-	//out := absPath + "/" + fileName
-	//defer os.Remove(out)
-	//os.MkdirAll(absPath, os.ModePerm)
-	//url := "http://cdn.geeleo.com/" + c.DownloadPath
-	//err := httpx.DownloadFile(url, out)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//
-	//unZipPath, err := compress.UnZip(filepath.Join(absPath, fileName), unZipOut)
-	//if err != nil {
-	//	return nil, err
-	//}
-	////todo 设置权限
-	////exec.Command("chmod")
-	//// 创建一个命令来添加执行权限
-	//if runtime.GOOS != "windows" {
-	//	p := unZipOut + "/" + c.Name
-	//	cmd := exec.Command("chmod", "+x", unZipOut+"/"+c.Name)
-	//	// 执行命令
-	//	err = cmd.Run()
-	//	if err != nil {
-	//		fmt.Printf("cmd.Run() failed with p:%s err:%s\n", p, err)
-	//		return nil, err
-	//	}
-	//}
-	//c.InstallPath = unZipPath
-	////判断是否存在该软件
-	//return &c.InstallInfo, nil
-}
 
-//func (c *Cmd) Install() (*InstallInfo, error) {
-//	absPath := "./soft_cmd"
-//	//absPath = strings.Join([]string{absPath, s.User, s.Name}, "/")
-//	absPath = strings.Join([]string{absPath, c.User}, "/")
-//	unZipOut := absPath + "/" + c.Name
-//	path := strings.Split(c.DownloadPath, "/")
-//	fileName := path[len(path)-1]
-//
-//	appName := ""
-//	if runtime.GOOS == "windows" {
-//		//fileName  =soft.zip
-//		appName = strings.Split(fileName, ".")[0] + ".exe"
-//	} else {
-//		appName = strings.Split(fileName, ".")[0]
-//	}
-//	c.FullName = appName
-//	out := absPath + "/" + fileName
-//	defer os.Remove(out)
-//	os.MkdirAll(absPath, os.ModePerm)
-//	url := "http://cdn.geeleo.com/" + c.DownloadPath
-//	err := httpx.DownloadFile(url, out)
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	unZipPath, err := compress.UnZip(filepath.Join(absPath, fileName), unZipOut)
-//	if err != nil {
-//		return nil, err
-//	}
-//	//todo 设置权限
-//	//exec.Command("chmod")
-//	// 创建一个命令来添加执行权限
-//	if runtime.GOOS != "windows" {
-//		p := unZipOut + "/" + c.Name
-//		cmd := exec.Command("chmod", "+x", unZipOut+"/"+c.Name)
-//		// 执行命令
-//		err = cmd.Run()
-//		if err != nil {
-//			fmt.Printf("cmd.Run() failed with p:%s err:%s\n", p, err)
-//			return nil, err
-//		}
-//	}
-//	c.InstallPath = unZipPath
-//	//判断是否存在该软件
-//	return &c.InstallInfo, nil
-//}
+}
 
 func (c *Cmd) UnInstall() (*UnInstallInfo, error) {
 	return nil, nil

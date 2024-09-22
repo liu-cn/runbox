@@ -9,6 +9,7 @@ import (
 type Call struct {
 	User    string   `json:"user"`    //软件所属的用户
 	Soft    string   `json:"soft"`    //软件名
+	Type    string   `json:"type"`    //软件类型
 	Command string   `json:"command"` //命令
 	Method  string   `json:"method"`  //请求方式
 	Files   []string `json:"files"`
@@ -28,7 +29,7 @@ func (c *Call) RequestJSON() (string, error) {
 }
 
 func (c *Call) GetRequestFilePath(callerPath string) string {
-	reqJson := callerPath + fmt.Sprintf("/%s/%s/.request/%v_%v.json",
-		c.User, c.Soft, c.Soft, time.Now().UnixNano())
+	reqJson := callerPath + fmt.Sprintf("/.request/%v_%v.json",
+		c.Soft, time.Now().UnixNano())
 	return reqJson
 }

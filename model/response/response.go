@@ -50,6 +50,12 @@ func FailWithMessage(message string, c *gin.Context) {
 	Result(ERROR, map[string]interface{}{}, message, c)
 }
 
+func FailWithHttpStatus(c *gin.Context, httpStatus int, msg string) {
+	c.JSON(httpStatus, Response{
+		Msg: msg,
+	})
+}
+
 func NoAuth(message string, c *gin.Context) {
 	c.JSON(http.StatusUnauthorized, Response{
 		7,

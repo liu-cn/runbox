@@ -8,8 +8,8 @@ type InstallInfo struct {
 	FullName     string //软件名称,带后缀
 	User         string //所属用户
 	DownloadPath string //软件的云端地址
-	InstallPath  string //安装后的所属目录
-	Version      string //安装的软件版本
+	//InstallPath  string //安装后的所属目录
+	Version string //安装的软件版本
 }
 
 type UnInstallInfo struct {

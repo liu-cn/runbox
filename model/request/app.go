@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-type Call struct {
+type Run struct {
 	User    string   `json:"user"`    //软件所属的用户
 	Soft    string   `json:"soft"`    //软件名
 	Type    string   `json:"type"`    //软件类型
@@ -14,21 +14,23 @@ type Call struct {
 	Method  string   `json:"method"`  //请求方式
 	Files   []string `json:"files"`
 
-	UpdateVersion   bool                   `json:"update_version"`    //此时正处于版本更新的状态
+	Body            map[string]interface{} `json:"body"`              //请求json
 	RequestJsonPath string                 `json:"request_json_path"` //请求参数存储路径
-	Data            map[string]interface{} `json:"data"`              //请求json
-	ReqBody         string
+
+	//UpdateVersion   bool                   `json:"update_version"`    //此时正处于版本更新的状态
+
+	//ReqBody         string
 }
 
-func (c *Call) RequestJSON() (string, error) {
-	j, err := json.Marshal(c.Data)
+func (c *Run) RequestJSON() (string, error) {
+	j, err := json.Marshal(c.Body)
 	if err != nil {
 		return "", err
 	}
 	return string(j), nil
 }
 
-func (c *Call) GetRequestFilePath(callerPath string) string {
+func (c *Run) GetRequestFilePath(callerPath string) string {
 	reqJson := callerPath + fmt.Sprintf("/.request/%v_%v.json",
 		c.Soft, time.Now().UnixNano())
 	return reqJson

@@ -1,7 +1,13 @@
 package router
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	v1 "github.com/liu-cn/runbox/api/v1"
+)
 
-func Init(r *gin.Engine) {
-	r.GET("/call", func(c *gin.Context) {})
+func Register(r *gin.Engine) {
+	box := v1.NewDefaultRunBox()
+	runnerGroup := r.Group("/runner")
+	runnerGroup.GET("/run/:user/:soft/:command", box.Run)
+	runnerGroup.POST("/run/:user/:soft/:command", box.Run)
 }

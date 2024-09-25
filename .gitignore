@@ -1,0 +1,9 @@
+*.log
+*.yaml
+.idea
+*.sum
+*.key
+test
+logs/*
+key.json
+key

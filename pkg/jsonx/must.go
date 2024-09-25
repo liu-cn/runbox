@@ -33,3 +33,12 @@ func JSONString(el interface{}) string {
 	}
 	return string(marshal)
 }
+
+// String ...
+func String(el interface{}) string {
+	marshal, err := json.Marshal(el)
+	if err != nil {
+		return ""
+	}
+	return string(marshal)
+}

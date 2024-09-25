@@ -15,5 +15,5 @@ type Runner interface {
 	Install(store store.FileStore) (installInfo *InstallInfo, err error)
 	GetInstallPath() (path string)
 	UnInstall() (unInstallInfo *UnInstallInfo, err error)
-	Call(req *request.Call) (*response.Call, error)
+	Call(req *request.Run) (*response.Run, error)
 }

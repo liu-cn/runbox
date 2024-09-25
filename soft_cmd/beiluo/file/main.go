@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/flipped-aurora/gin-vue-admin/server/sdk/runner"
+	"github.com/liu-cn/runbox/sdk/runner"
 	"os"
 	"path"
 )

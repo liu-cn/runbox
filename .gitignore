@@ -7,3 +7,4 @@ test
 logs/*
 key.json
 key
+.request

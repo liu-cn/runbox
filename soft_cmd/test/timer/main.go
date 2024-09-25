@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/flipped-aurora/gin-vue-admin/server/sdk/runner"
+	"github.com/liu-cn/runbox/sdk/runner"
 	"time"
 )
 

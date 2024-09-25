@@ -7,7 +7,6 @@ import (
 	"github.com/liu-cn/runbox/pkg/logger"
 	logger2 "github.com/liu-cn/runbox/sdk/runner/logger"
 	"github.com/liu-cn/runbox/sdk/runner/request"
-	"github.com/sirupsen/logrus"
 	"net/http"
 	"os"
 	"strings"
@@ -28,14 +27,6 @@ type Context struct {
 	runner *Runner `json:"-"`
 }
 
-func (c *Context) Logger() *logrus.Entry {
-	return logrus.StandardLogger().WithFields(logrus.Fields{
-		"user":      c.Req.User,
-		"soft":      c.Req.Soft,
-		"command":   c.Req.Command,
-		"user_soft": fmt.Sprintf("/%s/%s", c.Req.User, c.Req.Soft),
-	})
-}
 func (c *Context) GetLogger() *logger2.Logger {
 
 	mp := make(map[string]interface{})

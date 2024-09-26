@@ -16,29 +16,33 @@ import (
 	xerrors "github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"io"
-	"os"
-	"path/filepath"
 	"strings"
 )
 
-func NewDefaultRunBox() *RunBox {
-	return &RunBox{
-		Engine: engine.NewRunBox(store.NewDefaultQiNiu()),
+func NewDefaultApi() *Api {
+	return &Api{
+		RunBox: engine.NewRunBox(store.NewDefaultQiNiu()),
 	}
 }
 
-type RunBox struct {
-	Engine *engine.RunBox
+type Api struct {
+	RunBox *engine.RunBox
 }
 
-func (r *RunBox) getRunnerMeta(c *gin.Context) *model.Runner {
+func (r *Api) getRunnerMeta(c *gin.Context) *model.Runner {
 	rn := &model.Runner{
-		AppCode:    c.Request.Header.Get("runner-app-code"),
-		ToolType:   c.Request.Header.Get("runner-tool-type"),
-		Version:    c.Request.Header.Get("runner-version"),
-		OssPath:    c.Request.Header.Get("runner-oss-path"),
-		TenantUser: c.Request.Header.Get("runner-tenant-user"),
+		AppCode: c.Param("soft"),
+		//ToolType:   c.Request.Header.Get("runner-tool-type"),
+		//Version:    c.Request.Header.Get("runner-version"),
+		//OssPath:    c.Request.Header.Get("runner-oss-path"),
+		TenantUser: c.Param("user"),
 	}
+
+	if c.Request.Method == "GET" {
+		rn.ToolType = c.Query("type")
+		rn.Version = c.Query("version")
+	}
+
 	return rn
 }
 
@@ -66,7 +70,7 @@ func GetSoftLogs(callResponse *response.Run) {
 	}
 }
 
-func (r *RunBox) getReqData(c *gin.Context) (map[string]interface{}, error) {
+func (r *Api) getReqData(c *gin.Context) (map[string]interface{}, error) {
 	mp := make(map[string]interface{})
 	if c.Request.Method == "GET" {
 		queryMap := c.Request.URL.Query()
@@ -91,7 +95,7 @@ func (r *RunBox) getReqData(c *gin.Context) (map[string]interface{}, error) {
 	return mp, nil
 }
 
-func (r *RunBox) Run(c *gin.Context) {
+func (r *Api) Run(c *gin.Context) {
 	var (
 		req request.Run
 		err error
@@ -114,18 +118,7 @@ func (r *RunBox) Run(c *gin.Context) {
 		return
 	}
 
-	//runnerMetaData := c.Request.Header.Get("Runner-Meta-Data")
-	//if runnerMetaData == "" {
-	//	response.FailWithHttpStatus(c, 403, "请携带元数据信息")
-	//	return
-	//}
-
 	runnerMeta := r.getRunnerMeta(c)
-	//err = json.Unmarshal([]byte(runnerMetaData), &runnerMeta)
-	//if err != nil {
-	//	response.FailWithHttpStatus(c, 403, "请携带正确的元数据信息")
-	//	return
-	//}
 	err = runnerMeta.Check()
 	if err != nil {
 		response.FailWithHttpStatus(c, 403, err.Error())
@@ -153,13 +146,9 @@ func (r *RunBox) Run(c *gin.Context) {
 	}
 	//todo 请求参数文件需要删除
 	//defer os.Remove(req.RequestJsonPath)
-	getCall, err := r.Engine.Run(&req, runnerMeta)
-
-	//call, err := run.Call(&req)
+	getCall, err := r.RunBox.Run(&req, runnerMeta)
 	if err != nil {
 		response.FailWithHttpStatus(c, 500, err.Error())
-
-		//response.FailWithMessage(err.Error(), c)
 		return
 	}
 	GetSoftLogs(getCall) //记录用户日志
@@ -171,34 +160,23 @@ func (r *RunBox) Run(c *gin.Context) {
 	}
 
 	contentType := getCall.GetContentType()
-	if contentType == content_type.ApplicationOctetStream {
-		if getCall.HasFile {
-			//if call.HasFile
-			fileName := filepath.Base(getCall.FilePath) // 获取文件名
-			//todo DeleteFileTime 这里删除文件的逻辑有3种，-1：不删除，0：响应后立即删除，>0的时间戳：引擎会定时去删除这个文件
-			if getCall.FilePath != "" && getCall.DeleteFileTime == 0 { //说明响应后需要立刻删除文件
-				defer os.Remove(getCall.FilePath)
-			}
-			if getCall.FilePath != "" && getCall.DeleteFileTime > 0 { //说明响应后需要立刻删除文件
-				//todo 这里需要把文件记录起来，定时扫描删除
-			}
-			// 如果请求中有自定义文件名，则使用自定义文件名
-			if customFileName := c.Query("filename"); customFileName != "" {
-				fileName = customFileName
-			}
-			c.Writer.Header().Add("Content-Disposition", "attachment; filename="+fileName)
-			c.File(getCall.FilePath)
-			return
-		}
+	if contentType == content_type.ApplicationOctetStream { //二进制文件
+		ResponseOctetStream(c, getCall)
 	}
 
-	if contentType == content_type.ApplicationJsonCharsetUtf8 {
-		c.Data(200, "application/json; charset=utf-8", []byte(jsonx.JSONString(getCall.Body)))
-		return
+	if contentType == content_type.ApplicationJsonCharsetUtf8 { //json
+		ResponseJSON(c, getCall)
 	}
-	if contentType == content_type.TextPlainCharsetUtf8 {
+	if contentType == content_type.TextPlainCharsetUtf8 { //text
 		c.Data(200, "text/plain; charset=utf-8", []byte(fmt.Sprintf("%v", getCall.Body)))
 		return
+	}
+	if strings.Contains(contentType, "image/") { //图片
+		ResponseImage(c, getCall)
+	}
+
+	if strings.Contains(contentType, "video/") { //视频
+		ResponseVideo(c, getCall)
 	}
 
 }

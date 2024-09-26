@@ -5,7 +5,9 @@ import (
 	"github.com/liu-cn/runbox/pkg/jsonx"
 	"github.com/liu-cn/runbox/sdk/runner/content_type"
 	"github.com/liu-cn/runbox/sdk/runner/response"
+	"mime"
 	"path/filepath"
+	"strings"
 )
 
 func (c *Context) ResponseFailJSONWithCode(code int, jsonEl interface{}) {
@@ -70,13 +72,36 @@ type Response struct {
 	Body   interface{} //http 响应body
 }
 
-func (c *Context) Response(res Response) {
+// 相对路径转换成绝对路径
+func (c *Context) getAbsPath(path string) string {
+	fmt.Println("c.WorkPath", c.WorkPath)
+	abs := strings.ReplaceAll(path, "./", c.WorkPath+"/")
+	return strings.ReplaceAll(abs, "\\", "/")
+}
+
+func (c *Context) Response(res Response) error {
 	if res.Header == nil {
 		res.Header = make(map[string]string) //默认响应json格式
 		if res.FilePath != "" {              //如果存在文件返回二进制类型
-			res.Header["Content-Type"] = content_type.ApplicationOctetStream
-		} else {
+			path := c.getAbsPath(res.FilePath)
+			fmt.Println("abs: ", path)
+
+			res.FilePath = path
+			ext := filepath.Ext(res.FilePath)
+			mimeType := mime.TypeByExtension(ext)
+			fmt.Printf("mimeType: %s\n", mimeType)
+			//file, err := os.Open(res.FilePath)
+			//if err != nil {
+			//	return err
+			//}
+			//defer file.Close()
+			//fileInfo, _ := file.Stat()
+			//fileType := http.DetectContentType([]byte(mimeType))
+			fmt.Printf("file name :%v fileType:%v \n", res.FilePath, mimeType)
 			//默认返回json格式
+			res.Header["Content-Type"] = mimeType
+
+		} else {
 			res.Header["Content-Type"] = content_type.ApplicationJsonCharsetUtf8
 		}
 	}
@@ -88,24 +113,24 @@ func (c *Context) Response(res Response) {
 		DeleteFileTime: res.DeleteFileTime,
 	}
 	c.response(jsonx.String(rsp))
+	return nil
 }
 
 // ResponseOkWithFile 返回文件
-func (c *Context) ResponseOkWithFile(filePath string, deleteFile bool) error {
+func (c *Context) ResponseOkWithFile(filePath string, deleteFileTime int) error {
 	abs, err := filepath.Abs(filePath)
 	if err != nil {
 		return err
 	}
 
 	rsp := &response.CallResponse{
-		HasFile:    true,
 		StatusCode: 200,
 		Header: map[string]string{
 			"Content-Type": content_type.ApplicationOctetStream,
 		},
+		DeleteFileTime: deleteFileTime,
 		//ContentType: content_type.ApplicationOctetStream,
-		FilePath:   abs,
-		DeleteFile: deleteFile}
+		FilePath: abs}
 	c.response(jsonx.String(rsp))
 	return nil
 }

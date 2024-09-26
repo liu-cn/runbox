@@ -12,9 +12,9 @@ type CallResponse struct {
 	StatusCode int    `json:"status_code"`
 	Msg        string `json:"msg"`
 	//ContentType    string      `json:"content_type"`
-	HasFile        bool        `json:"has_file"`
-	FilePath       string      `json:"path"`
-	DeleteFile     bool        `json:"delete_file"`
+	//HasFile        bool        `json:"has_file"`
+	FilePath string `json:"path"`
+	//DeleteFile     bool        `json:"delete_file"`
 	DeleteFileTime int         `json:"delete_file_time"`
 	Body           interface{} `json:"data"`
 

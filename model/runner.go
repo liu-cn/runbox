@@ -20,9 +20,7 @@ func (r *Runner) Check() error {
 	if r.Version == "" {
 		return fmt.Errorf("version 不能为空")
 	}
-	if r.OssPath == "" {
-		return fmt.Errorf("OssPath 不能为空")
-	}
+
 	if r.TenantUser == "" {
 		return fmt.Errorf("TenantUser 不能为空")
 	}

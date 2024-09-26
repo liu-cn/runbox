@@ -6,7 +6,18 @@ import (
 	"time"
 )
 
+type MetaData struct {
+	WorkPath   string `json:"work_path"`
+	RunnerType string `json:"runner_type"`
+	Version    string `json:"version"`
+	Command    string `json:"command"` //命令
+	User       string `json:"user"`    //软件所属的用户
+	Soft       string `json:"soft"`    //软件名
+	OssPath    string `json:"oss_path"`
+}
 type Run struct {
+	MetaData MetaData `json:"meta_data"`
+
 	User    string   `json:"user"`    //软件所属的用户
 	Soft    string   `json:"soft"`    //软件名
 	Type    string   `json:"type"`    //软件类型

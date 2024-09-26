@@ -20,6 +20,7 @@ func init() {
 type Context struct {
 	IsDebug  bool
 	Cmd      string   `json:"cmd"`
+	WorkPath string   `json:"work_path"` //工作目录
 	Request  string   `json:"request"`
 	FileList []string `json:"file_list"`
 
@@ -156,12 +157,13 @@ func (r *Runner) Get(commandName string, handelFunc func(ctx *Context), config .
 func (r *Runner) Run() {
 	command := os.Args[1]
 	jsonFileName := os.Args[2]
-	if len(os.Args) > 3 {
+	workPath := os.Args[3]
+	if len(os.Args) > 4 {
 		r.IsDebug = true
 	}
 	r.DebugPrintf("run ....")
 
-	context := &Context{Request: jsonFileName, IsDebug: r.IsDebug}
+	context := &Context{Request: jsonFileName, WorkPath: workPath, IsDebug: r.IsDebug}
 	err := bind(context)
 	if err != nil {
 		context.ResponseFailJSONWithCode(http.StatusBadRequest, map[string]interface{}{

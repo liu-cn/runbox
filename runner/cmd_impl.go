@@ -23,8 +23,6 @@ import (
 func NewCmd(runner *model.Runner) *Cmd {
 	//dir, _ := os.UserHomeDir()
 	dir := "./soft_cmd"
-
-	//s := model.PcMap[runner.ToolType]
 	fullName := runner.AppCode
 	if runner.ToolType == "windows" {
 		fullName += ".exe"
@@ -65,6 +63,7 @@ func (c *Cmd) GetInstallPath() string {
 	return abs
 }
 
+// Chmod mac和linux需要授予执行权限
 func (c *Cmd) Chmod() error {
 	if runtime.GOOS != "windows" {
 		cmdPath := filepath.Join(c.GetInstallPath(), c.Name)
@@ -130,18 +129,19 @@ func (c *Cmd) UnInstall() (*UnInstallInfo, error) {
 	return nil, nil
 }
 
-func (c *Cmd) Call(req *request.Run) (*response.Run, error) {
+func (c *Cmd) Run(req *request.Run) (*response.Run, error) {
 	now := time.Now()
 	installPath := c.GetInstallPath()
 	appName := c.GetAppName()
 	softPath := fmt.Sprintf("%s/%s", installPath, appName)
 	softPath = strings.ReplaceAll(softPath, "\\", "/")
 	req.RequestJsonPath = strings.ReplaceAll(req.RequestJsonPath, "\\", "/")
-	cmd := exec.Command(softPath, req.Command, req.RequestJsonPath)
+	cmd := exec.Command(softPath, req.Command, req.RequestJsonPath, installPath)
+	cmd.Dir = installPath
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	err := cmd.Run()
-	cmdStr := fmt.Sprintf("%s %s %s", softPath, req.Command, req.RequestJsonPath)
+	cmdStr := fmt.Sprintf("%s %s %s %s", softPath, req.Command, req.RequestJsonPath, installPath)
 	fmt.Println(cmdStr)
 	if err != nil {
 		return nil, err

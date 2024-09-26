@@ -88,7 +88,7 @@ func (c *Cmd) Install(fileStore store.FileStore) (*InstallInfo, error) {
 
 	DeCompressPath := c.DeCompressPath()
 	defer os.RemoveAll(DeCompressPath)
-	err = compress.DeCompressx(file.FileLocalPath, DeCompressPath)
+	err = compress.DeCompress(file.FileLocalPath, DeCompressPath)
 	if err != nil {
 		return nil, err
 	}

@@ -39,15 +39,15 @@ func (r *Api) getRunnerMeta(c *gin.Context) *model.Runner {
 	}
 
 	if c.Request.Method == "GET" {
-		rn.ToolType = c.Query("type")
-		rn.Version = c.Query("version")
+		rn.ToolType = c.Query("_type")
+		rn.Version = c.Query("_version")
 	}
 
 	return rn
 }
 
-// GetSoftLogs softRunTime 程序执行耗时，callCostTime：调用+执行的耗时
-func GetSoftLogs(callResponse *response.Run) {
+// GetRunnerLogs softRunTime 程序执行耗时，callCostTime：调用+执行的耗时
+func GetRunnerLogs(callResponse *response.Run) {
 	//todo 这里应该记录请求用户信息
 	softRunTime := ""
 	softRunTimeList := stringsx.ParserHtmlTagContent(callResponse.ResponseMetaData, "UserCost")
@@ -104,7 +104,7 @@ func (r *Api) Run(c *gin.Context) {
 	req.Soft = c.Param("soft")       //软件名称
 	req.User = c.Param("user")       //应用所属租户
 	req.Command = c.Param("command") //命令
-
+	req.Command = strings.TrimPrefix(req.Command, "/")
 	if req.Soft == "" {
 		response.FailWithHttpStatus(c, 400, "soft不能为空")
 		return
@@ -151,7 +151,7 @@ func (r *Api) Run(c *gin.Context) {
 		response.FailWithHttpStatus(c, 500, err.Error())
 		return
 	}
-	GetSoftLogs(getCall) //记录用户日志
+	GetRunnerLogs(getCall) //记录用户日志
 	if getCall.StatusCode != 200 {
 		c.JSON(getCall.StatusCode, gin.H{
 			"msg": getCall.Body,

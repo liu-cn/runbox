@@ -8,7 +8,7 @@ import (
 func main() {
 
 	r := runner.New()
-	r.Get("views", func(ctx *runner.Context) {
+	r.Get("views/test", func(ctx *runner.Context) {
 		reqMap := ctx.ReqMap()
 		imageName := reqMap["image_name"].(string)
 		err := ctx.Response(runner.Response{

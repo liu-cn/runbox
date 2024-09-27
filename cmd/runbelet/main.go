@@ -2,13 +2,13 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/liu-cn/runbox/runbelet/proxy"
+	"github.com/liu-cn/runbox/cmd/runbelet/proxy"
 	"log"
 )
 
 func main() {
 	r := gin.Default()
-	newProxy, err := proxy.NewProxy("http://127.0.0.1:17777")
+	newProxy, err := proxy.NewHttpProxy("http://127.0.0.1:17777")
 	if err != nil {
 		panic(err)
 	}

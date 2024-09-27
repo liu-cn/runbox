@@ -1,5 +1,7 @@
 package store
 
+import "os"
+
 // FileStore 存储接口
 type FileStore interface {
 	// FileSave 保存文件
@@ -24,4 +26,8 @@ type GetFileInfo struct {
 	FileLocalPath string `json:"file_local_path"` //下载后本地存储的文件地址
 	FileSize      int64  `json:"file_size"`
 	FileType      string `json:"file_type"`
+}
+
+func (i *GetFileInfo) RemoveLocalFile() error {
+	return os.Remove(i.FileLocalPath)
 }

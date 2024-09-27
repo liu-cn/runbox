@@ -7,7 +7,7 @@ import (
 	"net/url"
 )
 
-func NewProxy(proxyUrl string) (*httputil.ReverseProxy, error) {
+func NewHttpProxy(proxyUrl string, handel ...func(req *http.Request)) (*httputil.ReverseProxy, error) {
 	targetURL, err := url.Parse(proxyUrl)
 	if err != nil {
 		log.Fatal(err)
@@ -18,6 +18,11 @@ func NewProxy(proxyUrl string) (*httputil.ReverseProxy, error) {
 	proxy := &httputil.ReverseProxy{
 		Director: func(req *http.Request) {
 			//todo 这里可以负载均衡，添加元数据，鉴权用户是否登录，验证权限等等
+			if handel != nil {
+				f := handel[0]
+				f(req)
+			}
+
 			query := req.URL.Query()
 			query.Add("_version", "v1")
 			query.Add("_type", "windows")

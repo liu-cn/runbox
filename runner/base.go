@@ -14,3 +14,6 @@ type InstallInfo struct {
 
 type UnInstallInfo struct {
 }
+
+type UpdateVersion struct {
+}

@@ -28,5 +28,6 @@ type Runner interface {
 	GetInstallPath() (path string)                                                                     //获取安装路径
 	UnInstall() (unInstallInfo *response.UnInstallInfo, err error)                                     //卸载
 	UpdateVersion(up *model.UpdateVersion, fileStore store.FileStore) (*response.UpdateVersion, error) //更新版本
+	RollbackVersion(req *request.RollbackVersion) error                                                //版本回滚
 	Run(req *request.Run) (*response.Run, error)                                                       //运行程序
 }

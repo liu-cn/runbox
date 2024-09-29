@@ -1,17 +1,22 @@
 package webx
 
 import (
+	"fmt"
 	"golang.org/x/sync/errgroup"
 	"os"
 	"path/filepath"
 	"strings"
 )
 
+type Path struct {
+}
+
 type FileWithPath struct {
 	AbsolutePath string
 	RelativePath string
 	ReplacePath  string
 	IsIndexFile  bool
+	//List[]
 
 	//SavePath     string
 }
@@ -96,6 +101,7 @@ func ReplaceFilePath(webPath string, pathPrefix string) ([]*FileWithPath, error)
 		fileReplaceMap[files[i].RelativePath] = files[i].ReplacePath
 	}
 	var eg errgroup.Group
+	//lk := &sync.Mutex
 	for _, file := range files {
 		file := file
 		eg.Go(func() error {
@@ -105,7 +111,20 @@ func ReplaceFilePath(webPath string, pathPrefix string) ([]*FileWithPath, error)
 			}
 			fileContent := string(fileBytes)
 			for path, replacePath := range fileReplaceMap {
-				fileContent = strings.ReplaceAll(fileContent, "\""+path+"\"", "\""+replacePath+"\"")
+				//logrus.Infof()
+				old := fmt.Sprintf(`"%s"`, path)
+				newPath := fmt.Sprintf(`"%s"`, replacePath)
+				fileContent = strings.ReplaceAll(fileContent, old, newPath)
+				//logrus.Infof("file %s replaced with old: %s new: %s", file.AbsolutePath, old, newPath)
+
+				old = fmt.Sprintf(`"%s"`, strings.TrimPrefix(path, "/"))
+				newPath = fmt.Sprintf(`"%s"`, strings.ReplaceAll(replacePath, "http://cdn.geeleo.com/", ""))
+				fileContent = strings.ReplaceAll(fileContent, old, newPath)
+				//logrus.Infof("file %s replaced with old: %s new: %s", file.AbsolutePath, old, newPath)
+
+				//fileContent = strings.ReplaceAll(fileContent, "\""+path+"\"", "\""+replacePath+"\"")
+				//fileContent = strings.ReplaceAll(fileContent, "\""+strings.TrimPrefix(path, "/")+"\"", "\""+replacePath+"\"")
+				//fileContent = strings.ReplaceAll(fileContent, "\""+strings.TrimPrefix(path, "\\")+"\"", "\""+replacePath+"\"")
 			}
 
 			err = os.Remove(file.AbsolutePath)

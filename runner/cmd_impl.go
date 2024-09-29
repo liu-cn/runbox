@@ -49,6 +49,10 @@ type Cmd struct {
 	response.InstallInfo
 }
 
+func (c *Cmd) RollbackVersion(r *request.RollbackVersion) error {
+	return nil
+}
+
 // DeCompressPath 解压临时目录
 func (c *Cmd) DeCompressPath() string {
 	return filepath.Join(c.TempPath, c.User, c.Name)
@@ -133,22 +137,9 @@ func (c *Cmd) UnInstall() (*response.UnInstallInfo, error) {
 func (c *Cmd) UpdateVersion(up *model.UpdateVersion, fileStore store.FileStore) (*response.UpdateVersion, error) {
 	//ps: OssPath=  tool/beiluo/1725442391820/helloworld.zip
 	src := filepath.Join(c.RootPath, c.User)
-	//path := strings.Split(up.NewVersionOssPath, "/")
-	//fileName := path[len(path)-1] //ps: helloworld.zip
-	//appDirName := strings.TrimSuffix(fileName, ".zip")                                          //目录名称：helloworld
 	appDirName := c.Name                                               //目录名称：helloworld
 	backPath := filepath.Join(src, ".back", appDirName, up.OldVersion) // ps: ./soft_cmd/beiluo/.back/helloworld/v1.0
-	//appName := c.FullName                                                            //
-	//if runtime.GOOS == "windows" {
-	//	//fileName  =soft.zip
-	//	appName = strings.Split(fileName, ".")[0] + ".exe" //windows ps: helloworld.exe
-	//} else {
-	//	appName = strings.Split(fileName, ".")[0] //linux ps: helloworld
-	//}
-	//fmt.Println("appName:", appName)
-	//zipOut := src + "/" + fileName //ps: ./soft_cmd/beiluo/helloworld.zip
-	//currentSoftSrc := strings.TrimSuffix(zipOut, ".zip") //ps: ./soft_cmd/beiluo/helloworld
-	currentSoftSrc := c.GetInstallPath() //ps: ./soft_cmd/beiluo/helloworld
+	currentSoftSrc := c.GetInstallPath()                               //ps: ./soft_cmd/beiluo/helloworld
 	fileInfo, err := fileStore.GetFile(up.NewVersionOssPath)
 	if err != nil {
 		return nil, err
@@ -185,7 +176,6 @@ Back:
 			goto Back
 		}
 	}
-	//fmt.Println(unZipPath)
 	err = osx.CopyDirectory(copyTempDir, currentSoftSrc) //复制目录
 	if err != nil {
 		return nil, err
@@ -194,18 +184,6 @@ Back:
 	if err != nil {
 		return nil, err
 	}
-	//if runtime.GOOS != "windows" {
-	//	p := currentSoftSrc + "/" + appDirName
-	//	cmd := exec.Command("chmod", "+x", p)
-	//
-	//	// 执行命令
-	//	err = cmd.Run()
-	//	if err != nil {
-	//		fmt.Printf("cmd.Run() failed with p:%s err:%s\n", p, err)
-	//		return nil, err
-	//	}
-	//}
-
 	//复制目录
 	return &response.UpdateVersion{}, nil
 }

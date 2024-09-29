@@ -6,18 +6,18 @@ type UnInstallInfo struct {
 }
 
 type InstallInfo struct {
-	TempPath     string //软件安装时候临时目录，下载到该目录，然后copy到所属目录
-	RootPath     string //存储根路径
-	StoreRoot    string //云存储根路径
-	Pc           string //软件平台
-	Name         string //软件名称
-	FullName     string //软件名称,带后缀
-	User         string //所属用户
-	DownloadPath string //软件的云端地址
+	TempPath     string `json:"temp_path"`     //软件安装时候临时目录，下载到该目录，然后copy到所属目录
+	RootPath     string `json:"root_path"`     //存储根路径
+	StoreRoot    string `json:"store_root"`    //云存储根路径
+	Pc           string `json:"pc"`            //软件平台
+	Name         string `json:"name"`          //软件名称
+	FullName     string `json:"full_name"`     //软件名称,带后缀
+	User         string `json:"user"`          //所属用户
+	DownloadPath string `json:"download_path"` //软件的云端地址
 	//InstallPath  string //安装后的所属目录
-	Version string //安装的软件版本
+	Version string `json:"version"` //安装的软件版本
 
-	Other map[string]interface{}
+	Other map[string]interface{} `json:"other"`
 }
 
 type UpdateVersion struct {

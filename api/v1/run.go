@@ -16,6 +16,7 @@ import (
 	xerrors "github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"io"
+	"os"
 	"strings"
 )
 
@@ -31,10 +32,7 @@ type Api struct {
 
 func (r *Api) getRunnerMeta(c *gin.Context) *model.Runner {
 	rn := &model.Runner{
-		AppCode: c.Param("soft"),
-		//ToolType:   c.Request.Header.Get("runner-tool-type"),
-		//Version:    c.Request.Header.Get("runner-version"),
-		//OssPath:    c.Request.Header.Get("runner-oss-path"),
+		AppCode:    c.Param("soft"),
 		TenantUser: c.Param("user"),
 	}
 
@@ -145,7 +143,7 @@ func (r *Api) Run(c *gin.Context) {
 		return
 	}
 	//todo 请求参数文件需要删除
-	//defer os.Remove(req.RequestJsonPath)
+	defer os.Remove(req.RequestJsonPath)
 	getCall, err := r.RunBox.Run(&req, runnerMeta)
 	if err != nil {
 		response.FailWithHttpStatus(c, 500, err.Error())

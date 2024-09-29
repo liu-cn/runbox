@@ -15,6 +15,10 @@ type MetaData struct {
 	Soft       string `json:"soft"`    //软件名
 	OssPath    string `json:"oss_path"`
 }
+
+type RollbackVersion struct {
+}
+
 type Run struct {
 	MetaData MetaData `json:"meta_data"`
 

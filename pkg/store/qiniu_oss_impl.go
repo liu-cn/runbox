@@ -49,10 +49,13 @@ func qiniuConfig() *storage.Config {
 
 // FileSave 上传本地文件到七牛云
 func (q *QiNiu) FileSave(localFilePath string, ossPath string) (*FileSaveInfo, error) {
+	ossPath = strings.TrimPrefix(ossPath, "\\")
+	ossPath = strings.TrimPrefix(ossPath, "/")
 	file, err := os.Open(localFilePath)
 	if err != nil {
 		return nil, err
 	}
+	defer file.Close()
 	name := file.Name()
 	fileType := stringsx.GetSuffix(name, ".")
 	putPolicy := storage.PutPolicy{Scope: q.Bucket}

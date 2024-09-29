@@ -17,8 +17,9 @@ type FileStore interface {
 type FileSaveInfo struct {
 	SavePath     string `json:"save_path"`      //   /beiluo/d.zip
 	SaveFullPath string `json:"save_full_path"` //http://cdn.geeleo.com/beiluo/d.zip
-	FileName     string `json:"file_name"`      //文件名称
-	FileType     string `json:"file_type"`      //文件类型
+	//FileHomedir  string `json:"file_homedir"`   //文件解压后目录名字
+	FileName string `json:"file_name"` //文件名称
+	FileType string `json:"file_type"` //文件类型
 }
 
 type GetFileInfo struct {

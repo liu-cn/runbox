@@ -29,8 +29,8 @@ func NewCmd(runner *model.Runner) *Cmd {
 		fullName += ".exe"
 	}
 	return &Cmd{
-		InstallInfo: InstallInfo{
-			TempPath:     os.TempDir(),
+		InstallInfo: response.InstallInfo{
+			TempPath:     filepath.Join(os.TempDir(), runner.ToolType),
 			RootPath:     dir,
 			Name:         runner.AppCode,
 			FullName:     fullName,
@@ -46,7 +46,7 @@ func (c *Cmd) GetAppName() string {
 }
 
 type Cmd struct {
-	InstallInfo
+	response.InstallInfo
 }
 
 // DeCompressPath 解压临时目录
@@ -78,7 +78,7 @@ func (c *Cmd) Chmod() error {
 	return nil
 }
 
-func (c *Cmd) Install(fileStore store.FileStore) (*InstallInfo, error) {
+func (c *Cmd) Install(fileStore store.FileStore) (*response.InstallInfo, error) {
 	//absPath := c.RootPath
 
 	file, err := fileStore.GetFile(c.DownloadPath)
@@ -126,11 +126,11 @@ func (c *Cmd) Install(fileStore store.FileStore) (*InstallInfo, error) {
 
 }
 
-func (c *Cmd) UnInstall() (*UnInstallInfo, error) {
+func (c *Cmd) UnInstall() (*response.UnInstallInfo, error) {
 	return nil, nil
 }
 
-func (c *Cmd) UpdateVersion(up *model.UpdateVersion, fileStore store.FileStore) (*UpdateVersion, error) {
+func (c *Cmd) UpdateVersion(up *model.UpdateVersion, fileStore store.FileStore) (*response.UpdateVersion, error) {
 	//ps: OssPath=  tool/beiluo/1725442391820/helloworld.zip
 	src := filepath.Join(c.RootPath, c.User)
 	//path := strings.Split(up.NewVersionOssPath, "/")
@@ -207,7 +207,7 @@ Back:
 	//}
 
 	//复制目录
-	return &UpdateVersion{}, nil
+	return &response.UpdateVersion{}, nil
 }
 
 func (c *Cmd) Run(req *request.Run) (*response.Run, error) {

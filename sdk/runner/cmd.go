@@ -3,10 +3,8 @@ package runner
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/liu-cn/runbox/pkg/jsonx"
 	"github.com/liu-cn/runbox/pkg/logger"
 	logger2 "github.com/liu-cn/runbox/sdk/runner/logger"
-	"github.com/liu-cn/runbox/sdk/runner/middleware"
 	"github.com/liu-cn/runbox/sdk/runner/request"
 	"os"
 )
@@ -60,16 +58,16 @@ func (r *Runner) DebugPrintf(format string, args ...interface{}) {
 	}
 }
 
-func bind(ctx *Context) error {
-	var ca request.Call
-	err := jsonx.UnmarshalFromFile(ctx.Request, &ca)
-	ctx.DebugPrintf("bind err:%v", err)
-	if err != nil {
-		return err
-	}
-	ctx.Req = &ca
-	return nil
-}
+//func bind(ctx *Context) error {
+//	var ca request.Call
+//	err := jsonx.UnmarshalFromFile(ctx.Request, &ca)
+//	ctx.DebugPrintf("bind err:%v", err)
+//	if err != nil {
+//		return err
+//	}
+//	ctx.Req = &ca
+//	return nil
+//}
 
 func (c *Context) ShouldBindJSON(jsonBody interface{}) error {
 	if c.Req != nil {
@@ -164,7 +162,7 @@ func (r *Runner) Run() {
 	r.DebugPrintf("run ....")
 
 	context := &Context{Request: jsonFileName, WorkPath: workPath, IsDebug: r.IsDebug, Cmd: command}
-	middleware.Handel(context, r)
+	Handel(context, r)
 	if r.About {
 		return
 	}

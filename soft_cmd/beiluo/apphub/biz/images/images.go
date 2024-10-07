@@ -1,6 +1,7 @@
 package images
 
 import (
+	"fmt"
 	"github.com/liu-cn/runbox/sdk/runner"
 	"github.com/liu-cn/runbox/soft_cmd/beiluo/apphub/model/dto"
 )
@@ -14,5 +15,11 @@ func View(ctx *runner.Context) {
 		ctx.ResponseFailDefaultJSONWithMsg("参数错误")
 		return
 	}
-	//ctx.ResponseOkWithFile()
+	err = ctx.Response(runner.Response{
+		FilePath:       "./assets/" + r.FilePath,
+		DeleteFileTime: -1,
+	})
+	if err != nil {
+		fmt.Println(err)
+	}
 }

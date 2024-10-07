@@ -16,7 +16,6 @@ import (
 	xerrors "github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"io"
-	"os"
 	"strings"
 )
 
@@ -143,7 +142,7 @@ func (r *Api) Run(c *gin.Context) {
 		return
 	}
 	//todo 请求参数文件需要删除
-	defer os.Remove(req.RequestJsonPath)
+	//defer os.Remove(req.RequestJsonPath)
 	getCall, err := r.RunBox.Run(&req, runnerMeta)
 	if err != nil {
 		response.FailWithHttpStatus(c, 500, err.Error())

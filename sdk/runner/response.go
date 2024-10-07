@@ -93,6 +93,9 @@ func (c *Context) Response(res Response) error {
 			res.Header["Content-Type"] = content_type.ApplicationJsonCharsetUtf8
 		}
 	}
+	if res.HttpStatusCode == 0 {
+		res.HttpStatusCode = 200
+	}
 	rsp := &response.CallResponse{
 		StatusCode:     res.HttpStatusCode,
 		Header:         res.Header,

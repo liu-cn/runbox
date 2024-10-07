@@ -26,7 +26,7 @@ func ResponseImage(c *gin.Context, call *response.Run) {
 	// 打开图片文件
 	file, err := os.Open(imagePath)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "无法打开图片文件"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "无法打开图片文件 err:" + err.Error()})
 		return
 	}
 	defer file.Close()

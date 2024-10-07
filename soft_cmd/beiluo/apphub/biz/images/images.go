@@ -14,5 +14,5 @@ func View(ctx *runner.Context) {
 		ctx.ResponseFailDefaultJSONWithMsg("参数错误")
 		return
 	}
-	ctx.ResponseOkWithFile()
+	//ctx.ResponseOkWithFile()
 }

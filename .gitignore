@@ -3,8 +3,10 @@
 .idea
 *.sum
 *.key
+*.json
 test
 logs/*
 key.json
 key
-.request
+.request/
+

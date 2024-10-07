@@ -74,7 +74,6 @@ type Response struct {
 
 // 相对路径转换成绝对路径
 func (c *Context) getAbsPath(path string) string {
-	fmt.Println("c.WorkPath", c.WorkPath)
 	abs := strings.ReplaceAll(path, "./", c.WorkPath+"/")
 	return strings.ReplaceAll(abs, "\\", "/")
 }
@@ -84,20 +83,9 @@ func (c *Context) Response(res Response) error {
 		res.Header = make(map[string]string) //默认响应json格式
 		if res.FilePath != "" {              //如果存在文件返回二进制类型
 			path := c.getAbsPath(res.FilePath)
-			fmt.Println("abs: ", path)
-
 			res.FilePath = path
 			ext := filepath.Ext(res.FilePath)
 			mimeType := mime.TypeByExtension(ext)
-			fmt.Printf("mimeType: %s\n", mimeType)
-			//file, err := os.Open(res.FilePath)
-			//if err != nil {
-			//	return err
-			//}
-			//defer file.Close()
-			//fileInfo, _ := file.Stat()
-			//fileType := http.DetectContentType([]byte(mimeType))
-			fmt.Printf("file name :%v fileType:%v \n", res.FilePath, mimeType)
 			//默认返回json格式
 			res.Header["Content-Type"] = mimeType
 
@@ -118,10 +106,13 @@ func (c *Context) Response(res Response) error {
 
 // ResponseOkWithFile 返回文件
 func (c *Context) ResponseOkWithFile(filePath string, deleteFileTime int) error {
-	abs, err := filepath.Abs(filePath)
-	if err != nil {
-		return err
-	}
+	//abs, err := filepath.Abs(filePath)
+	//if err != nil {
+	//	return err
+	//}
+
+	path := c.getAbsPath(filePath)
+	//res.FilePath = path
 
 	rsp := &response.CallResponse{
 		StatusCode: 200,
@@ -130,7 +121,7 @@ func (c *Context) ResponseOkWithFile(filePath string, deleteFileTime int) error 
 		},
 		DeleteFileTime: deleteFileTime,
 		//ContentType: content_type.ApplicationOctetStream,
-		FilePath: abs}
+		FilePath: path}
 	c.response(jsonx.String(rsp))
 	return nil
 }

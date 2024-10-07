@@ -19,6 +19,12 @@ func main() {
 	r.Any("/api/*path", func(c *gin.Context) {
 		// 修改请求路径，去掉/proxy前缀
 		c.Request.URL.Path = c.Param("path")
+
+		//query := req.URL.Query()
+		//query.Add("_version", "v1")
+		//query.Add("_type", "windows")
+		//req.URL.RawQuery = query.Encode()
+
 		newProxy.ServeHTTP(c.Writer, c.Request)
 	})
 

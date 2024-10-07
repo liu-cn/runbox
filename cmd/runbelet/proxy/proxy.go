@@ -23,12 +23,12 @@ func NewHttpProxy(proxyUrl string, handel ...func(req *http.Request)) (*httputil
 				f(req)
 			}
 
-			query := req.URL.Query()
-			query.Add("_version", "v1")
-			query.Add("_type", "windows")
+			//query := req.URL.Query()
+			//query.Add("_version", "v1")
+			//query.Add("_type", "windows")
+			//req.URL.RawQuery = query.Encode()
 			req.URL.Scheme = targetURL.Scheme
 			req.URL.Host = targetURL.Host
-			req.URL.RawQuery = query.Encode()
 			req.Header.Set("X-Forwarded-Host", req.Header.Get("Host"))
 			req.Header.Set("X-Origin-Host", targetURL.Host)
 		},

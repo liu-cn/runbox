@@ -2,37 +2,13 @@ package main
 
 import (
 	"github.com/liu-cn/runbox/sdk/runner"
-	"strings"
+	"github.com/liu-cn/runbox/soft_cmd/beiluo/strings/biz"
 )
 
 func main() {
 
 	r := runner.New()
-	r.Post("split", func(ctx *runner.Context) {
-		str := ctx.ReqMap()["str"].(string)
-		separator := ctx.ReqMap()["separator"].(string)
-		res := strings.Split(str, separator)
-		join := strings.Join(res, "\n")
-		ctx.ResponseOkWithJSON(map[string]interface{}{
-			"code": 0,
-			"msg":  "ok",
-			"data": map[string]interface{}{
-				"splitString": join,
-			},
-		})
-	})
-	r.Post("ReplaceAll", func(ctx *runner.Context) {
-
-		str := ctx.ReqMap()["str"].(string)
-		newStr := ctx.ReqMap()["new_str"].(string)
-		oldStr := ctx.ReqMap()["old_str"].(string)
-		all := strings.ReplaceAll(str, oldStr, newStr)
-
-		ctx.ResponseOkWithJSON(map[string]interface{}{
-			"code": 0,
-			"msg":  "ok",
-			"data": map[string]interface{}{"res": all},
-		})
-	})
+	r.Post("split", biz.Split)
+	r.Post("ReplaceAll", biz.ReplaceAll)
 	r.Run()
 }

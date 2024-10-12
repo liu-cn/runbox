@@ -13,3 +13,13 @@ func StringMap(j string) map[string]interface{} {
 	}
 	return mp
 }
+
+func Value(j string) interface{} {
+	var i interface{}
+	err := json.Unmarshal([]byte(j), &i)
+	if err != nil {
+		fmt.Println(fmt.Sprintf("[jsonx.Value] err:%s str:%s", err.Error(), j))
+		return nil
+	}
+	return i
+}

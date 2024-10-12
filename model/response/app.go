@@ -5,6 +5,9 @@ import "time"
 type UnInstallInfo struct {
 }
 
+type RollbackVersion struct {
+}
+
 type InstallInfo struct {
 	TempPath     string `json:"temp_path"`     //软件安装时候临时目录，下载到该目录，然后copy到所属目录
 	RootPath     string `json:"root_path"`     //存储根路径

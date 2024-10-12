@@ -155,13 +155,13 @@ func (r *Runner) Get(commandName string, handelFunc func(ctx *Context), config .
 func (r *Runner) Run() {
 	command := os.Args[1]
 	jsonFileName := os.Args[2]
-	workPath := os.Args[3]
-	if len(os.Args) > 4 {
+	//workPath := os.Args[3]
+	if len(os.Args) > 3 {
 		r.IsDebug = true
 	}
 	r.DebugPrintf("run ....")
 
-	context := &Context{Request: jsonFileName, WorkPath: workPath, IsDebug: r.IsDebug, Cmd: command}
+	context := &Context{Request: jsonFileName, IsDebug: r.IsDebug, Cmd: command}
 	Handel(context, r)
 	if r.About {
 		return

@@ -3,7 +3,7 @@ package model
 import "fmt"
 
 type Runner struct {
-	StoreRoot  string `json:"store_root"`
+	StoreRoot  string `json:"store_root"`                                                                          //oss 存储的跟路径
 	AppCode    string `json:"app_code" form:"appCode" gorm:"column:app_code;comment:;" binding:"required"`         //应用名称（英文标识）
 	ToolType   string `json:"tool_type" form:"tool_type" gorm:"column:tool_type;comment:工具类型;" binding:"required"` //工具类型
 	Version    string `json:"version" form:"version" gorm:"column:version;comment:;" binding:"required"`           //应用版本
@@ -29,8 +29,8 @@ func (r *Runner) Check() error {
 }
 
 type UpdateVersion struct {
-	RunnerConf        *Runner `json:"runner_conf"`
-	OldVersion        string  `json:"old_version"`
-	NewVersion        string  `json:"new_version"`
-	NewVersionOssPath string  `json:"new_version_oss_path"`
+	RunnerConf *Runner `json:"runner_conf"`
+	OldVersion string  `json:"old_version"`
+	//NewVersion        string  `json:"new_version"`
+	//NewVersionOssPath string  `json:"new_version_oss_path"`
 }

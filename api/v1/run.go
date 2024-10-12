@@ -9,13 +9,12 @@ import (
 	"github.com/liu-cn/runbox/model/content_type"
 	"github.com/liu-cn/runbox/model/request"
 	"github.com/liu-cn/runbox/model/response"
-	"github.com/liu-cn/runbox/pkg/jsonx"
 	"github.com/liu-cn/runbox/pkg/store"
 	"github.com/liu-cn/runbox/pkg/stringsx"
 	"github.com/liu-cn/runbox/runner"
-	xerrors "github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"io"
+	"os"
 	"strings"
 )
 
@@ -33,13 +32,9 @@ func (r *Api) getRunnerMeta(c *gin.Context) *model.Runner {
 	rn := &model.Runner{
 		AppCode:    c.Param("soft"),
 		TenantUser: c.Param("user"),
+		ToolType:   c.Query("_type"),
+		Version:    c.Query("_version"),
 	}
-
-	if c.Request.Method == "GET" {
-		rn.ToolType = c.Query("_type")
-		rn.Version = c.Query("_version")
-	}
-
 	return rn
 }
 
@@ -116,6 +111,8 @@ func (r *Api) Run(c *gin.Context) {
 	}
 
 	runnerMeta := r.getRunnerMeta(c)
+	//runnerMeta.AppCode = req.Soft
+	//runnerMeta.TenantUser = req.User
 	err = runnerMeta.Check()
 	if err != nil {
 		response.FailWithHttpStatus(c, 403, err.Error())
@@ -136,13 +133,13 @@ func (r *Api) Run(c *gin.Context) {
 	run := runner.NewRunner(runnerMeta)
 	req.RequestJsonPath = strings.ReplaceAll(req.GetRequestFilePath(run.GetInstallPath()), "\\", "/")
 
-	err = jsonx.SaveFile(req.RequestJsonPath, req) //todo 存储请求参数
-	if err != nil {
-		response.FailWithHttpStatus(c, 500, xerrors.Wrapf(err, "req.RequestJsonPath %s faild", req.RequestJsonPath).Error())
-		return
-	}
+	//err = jsonx.SaveFile(req.RequestJsonPath, req) //todo 存储请求参数
+	//if err != nil {
+	//	response.FailWithHttpStatus(c, 500, xerrors.Wrapf(err, "req.RequestJsonPath %s faild", req.RequestJsonPath).Error())
+	//	return
+	//}
 	//todo 请求参数文件需要删除
-	//defer os.Remove(req.RequestJsonPath)
+	defer os.Remove(req.RequestJsonPath)
 	getCall, err := r.RunBox.Run(&req, runnerMeta)
 	if err != nil {
 		response.FailWithHttpStatus(c, 500, err.Error())

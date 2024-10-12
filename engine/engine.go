@@ -4,6 +4,7 @@ import (
 	"github.com/liu-cn/runbox/model"
 	"github.com/liu-cn/runbox/model/request"
 	"github.com/liu-cn/runbox/model/response"
+	"github.com/liu-cn/runbox/pkg/jsonx"
 	"github.com/liu-cn/runbox/pkg/store"
 	"github.com/liu-cn/runbox/runner"
 )
@@ -20,6 +21,11 @@ func NewRunBox(fileStore store.FileStore) *RunBox {
 // Run 执行请求
 func (b *RunBox) Run(call *request.Run, runnerConf *model.Runner) (*response.Run, error) {
 	newRunner := runner.NewRunner(runnerConf)
+	call.MetaData.WorkPath = newRunner.GetInstallPath() //软件安装目录
+	err := jsonx.SaveFile(call.RequestJsonPath, call)   //todo 存储请求参数
+	if err != nil {
+		return nil, err
+	}
 	rspCall, err := newRunner.Run(call)
 	if err != nil {
 		return nil, err

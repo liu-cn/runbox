@@ -134,6 +134,9 @@ func (w *WebSite) Install(store store.FileStore) (installInfo *response.InstallI
 					//return nil, err
 				}
 			}
+			if strings.Contains(fileInfo.AbsolutePath, "logo.png") {
+				fmt.Println(fileInfo)
+			}
 			_, err := store.FileSave(fileInfo.AbsolutePath, w.GetSavePath(fileInfo))
 			if err != nil {
 				fmt.Println(fmt.Sprintf("%+v err:%s", fileInfo, err.Error()))
@@ -147,8 +150,8 @@ func (w *WebSite) Install(store store.FileStore) (installInfo *response.InstallI
 	fmt.Println("解析文件耗时：", cost1)
 	return &response.InstallInfo{}, nil
 }
-func (w *WebSite) RollbackVersion(r *request.RollbackVersion) error {
-	return nil
+func (w *WebSite) RollbackVersion(r *request.RollbackVersion, fileStore store.FileStore) (*response.RollbackVersion, error) {
+	return nil, nil
 }
 
 func (w *WebSite) GetInstallPath() (path string) {

@@ -2,6 +2,7 @@ package webx
 
 import (
 	"fmt"
+	"github.com/liu-cn/runbox/pkg/slicesx"
 	"golang.org/x/sync/errgroup"
 	"os"
 	"path/filepath"
@@ -81,6 +82,9 @@ func DistFiles(startDir string) ([]*FileWithPath, error) {
 		files[i].RelativePath = strings.ReplaceAll(file.AbsolutePath, startDir, "")
 
 	}
+	files = slicesx.Sort(files, func(a, b *FileWithPath) bool {
+		return len(a.RelativePath) < len(b.RelativePath)
+	})
 	return files, nil
 }
 
@@ -93,12 +97,15 @@ func ReplaceFilePath(webPath string, pathPrefix string) ([]*FileWithPath, error)
 	if err != nil {
 		return nil, err
 	}
-	for i := range files {
-		if files[i].RelativePath == "/index.html" {
-			files[i].IsIndexFile = true
+	for _, file := range files {
+		if file.RelativePath == "/index.html" {
+			file.IsIndexFile = true
 		}
-		files[i].ReplacePath = pathPrefix + files[i].RelativePath
-		fileReplaceMap[files[i].RelativePath] = files[i].ReplacePath
+		if strings.Contains(file.RelativePath, "logo.png") {
+			fmt.Printf("Found logo.png in %s\n", file.AbsolutePath)
+		}
+		file.ReplacePath = pathPrefix + file.RelativePath
+		fileReplaceMap[file.RelativePath] = file.ReplacePath
 	}
 	var eg errgroup.Group
 	//lk := &sync.Mutex
@@ -111,16 +118,15 @@ func ReplaceFilePath(webPath string, pathPrefix string) ([]*FileWithPath, error)
 			}
 			fileContent := string(fileBytes)
 			for path, replacePath := range fileReplaceMap {
-				//logrus.Infof()
+
 				old := fmt.Sprintf(`"%s"`, path)
 				newPath := fmt.Sprintf(`"%s"`, replacePath)
-				fileContent = strings.ReplaceAll(fileContent, old, newPath)
-				//logrus.Infof("file %s replaced with old: %s new: %s", file.AbsolutePath, old, newPath)
+				fileContent = strings.ReplaceAll(fileContent, old, newPath) //   old:= "/assets/index.html" ->  new:= http://cdn.geeleo.com/+ossPath
 
-				old = fmt.Sprintf(`"%s"`, strings.TrimPrefix(path, "/"))
+				old = fmt.Sprintf(`"%s"`, strings.TrimPrefix(path, "/")) //"/ass"
 				newPath = fmt.Sprintf(`"%s"`, strings.ReplaceAll(replacePath, "http://cdn.geeleo.com/", ""))
-				fileContent = strings.ReplaceAll(fileContent, old, newPath)
-				//logrus.Infof("file %s replaced with old: %s new: %s", file.AbsolutePath, old, newPath)
+				fileContent = strings.ReplaceAll(fileContent, old, newPath) //   old:= "assets/index.html" ->  new:= ossPath
+				//TODO 这里应该记录替换日志
 
 				//fileContent = strings.ReplaceAll(fileContent, "\""+path+"\"", "\""+replacePath+"\"")
 				//fileContent = strings.ReplaceAll(fileContent, "\""+strings.TrimPrefix(path, "/")+"\"", "\""+replacePath+"\"")

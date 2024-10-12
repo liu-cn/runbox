@@ -1,4 +1,4 @@
-package biz
+package array
 
 import (
 	"github.com/liu-cn/runbox/pkg/jsonx"

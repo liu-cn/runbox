@@ -13,6 +13,7 @@ import (
 	"github.com/liu-cn/runbox/pkg/store"
 	"github.com/liu-cn/runbox/pkg/stringsx"
 	"github.com/otiai10/copy"
+	"github.com/sirupsen/logrus"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -25,9 +26,15 @@ func NewCmd(runner *model.Runner) *Cmd {
 	//dir, _ := os.UserHomeDir()
 	dir := "./soft_cmd"
 	fullName := runner.AppCode
-	if runner.ToolType == "windows" {
+
+	//这里应该判断本机系统类型
+	//if runner.ToolType == "windows" {
+	//	fullName += ".exe"
+	//}
+	if runtime.GOOS == "windows" {
 		fullName += ".exe"
 	}
+
 	return &Cmd{
 		InstallInfo: response.InstallInfo{
 			TempPath:     filepath.Join(os.TempDir(), runner.ToolType),
@@ -49,8 +56,12 @@ type Cmd struct {
 	response.InstallInfo
 }
 
-func (c *Cmd) RollbackVersion(r *request.RollbackVersion) error {
-	return nil
+func (c *Cmd) RollbackVersion(r *request.RollbackVersion, fileStore store.FileStore) (*response.RollbackVersion, error) {
+	_, err := c.UpdateVersion(&model.UpdateVersion{RunnerConf: r.RunnerConf, OldVersion: r.OldVersion}, fileStore)
+	if err != nil {
+		return nil, err
+	}
+	return &response.RollbackVersion{}, nil
 }
 
 // DeCompressPath 解压临时目录
@@ -140,7 +151,7 @@ func (c *Cmd) UpdateVersion(up *model.UpdateVersion, fileStore store.FileStore) 
 	appDirName := c.Name                                               //目录名称：helloworld
 	backPath := filepath.Join(src, ".back", appDirName, up.OldVersion) // ps: ./soft_cmd/beiluo/.back/helloworld/v1.0
 	currentSoftSrc := c.GetInstallPath()                               //ps: ./soft_cmd/beiluo/helloworld
-	fileInfo, err := fileStore.GetFile(up.NewVersionOssPath)
+	fileInfo, err := fileStore.GetFile(up.RunnerConf.Version)
 	if err != nil {
 		return nil, err
 	}
@@ -189,40 +200,52 @@ Back:
 }
 
 func (c *Cmd) Run(req *request.Run) (*response.Run, error) {
+	var (
+		cmdStr    string
+		err       error
+		outString string
+		res       response.Run
+	)
+	defer func() {
+		if err != nil {
+			logrus.Errorf("Cmd call err:%s exec:%s ", err, cmdStr)
+		} else {
+			logrus.Infof("Cmd call exec:%s ", cmdStr)
+		}
+	}()
 	now := time.Now()
 	installPath := c.GetInstallPath()
 	appName := c.GetAppName()
 	softPath := fmt.Sprintf("%s/%s", installPath, appName)
 	softPath = strings.ReplaceAll(softPath, "\\", "/")
 	req.RequestJsonPath = strings.ReplaceAll(req.RequestJsonPath, "\\", "/")
-	cmd := exec.Command(softPath, req.Command, req.RequestJsonPath, installPath)
+	cmd := exec.Command(softPath, req.Command, req.RequestJsonPath)
 	cmd.Dir = installPath
 	var out bytes.Buffer
 	cmd.Stdout = &out
-	err := cmd.Run()
-	cmdStr := fmt.Sprintf("%s %s %s %s", softPath, req.Command, req.RequestJsonPath, installPath)
-	fmt.Println(cmdStr)
+	err = cmd.Run()
 	if err != nil {
 		return nil, err
 	}
-	s := out.String()
-	if s == "" {
+	cmdStr = fmt.Sprintf("%s %s %s", softPath, req.Command, req.RequestJsonPath)
+	logrus.Infof("Cmd run %s", cmdStr)
+	outString = out.String()
+	if outString == "" {
 		//todo
 		return nil, fmt.Errorf("out.String() ==== nil cmd程序输出的结果为空，请检测程序是否正确")
 	}
-	resList := stringsx.ParserHtmlTagContent(s, "Response")
+	resList := stringsx.ParserHtmlTagContent(outString, "Response")
 	if len(resList) == 0 {
 		//todo 请使用sdk开发软件
 		return nil, fmt.Errorf("soft call err 请使用sdk开发软件")
 	}
-	var res response.Run
 	err = json.Unmarshal([]byte(resList[0]), &res)
 	if err != nil {
 		return nil, err
 	}
 	since := time.Since(now)
 	res.CallCostTime = since
-	res.ResponseMetaData = s
+	res.ResponseMetaData = outString
 	//p.printSoftLogs(s, since)
 	return &res, nil
 }

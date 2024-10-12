@@ -27,6 +27,7 @@ type CloudFunc struct {
 func bind(ctx *Context) error {
 	var ca request.Call
 	err := jsonx.UnmarshalFromFile(ctx.Request, &ca)
+	ctx.WorkPath = ca.MetaData.WorkPath
 	ctx.DebugPrintf("bind err:%v", err)
 	if err != nil {
 		return err
@@ -35,7 +36,6 @@ func bind(ctx *Context) error {
 	return nil
 }
 func Handel(context *Context, runner *Runner) {
-
 	err := bind(context)
 	if err != nil {
 		context.ResponseFailJSONWithCode(http.StatusBadRequest, map[string]interface{}{

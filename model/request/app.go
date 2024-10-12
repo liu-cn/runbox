@@ -3,6 +3,7 @@ package request
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/liu-cn/runbox/model"
 	"time"
 )
 
@@ -17,6 +18,8 @@ type MetaData struct {
 }
 
 type RollbackVersion struct {
+	RunnerConf *model.Runner `json:"runner_conf"`
+	OldVersion string        `json:"old_version"`
 }
 
 type Run struct {

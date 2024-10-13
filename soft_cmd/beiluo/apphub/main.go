@@ -1,11 +1,11 @@
 package main
 
 import (
+	"github.com/liu-cn/runbox/runner_code/apphub/biz/array"
 	"github.com/liu-cn/runbox/runner_code/apphub/biz/images"
 	"github.com/liu-cn/runbox/runner_code/apphub/biz/strings"
 	"github.com/liu-cn/runbox/runner_code/apphub/biz/table"
 	"github.com/liu-cn/runbox/sdk/runner"
-	"github.com/liu-cn/runbox/soft_cmd/beiluo/apphub/biz/array"
 )
 
 func main() {
@@ -20,5 +20,6 @@ func main() {
 	r.Post("strings/Split", strings.Split)
 	r.Post("strings/ReplaceAll", strings.ReplaceAll)
 	r.Post("table/Demo", table.Demo)
+	r.Post("array/SplitJoin", array.SplitJoin)
 	r.Run()
 }

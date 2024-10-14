@@ -2,8 +2,8 @@ package table
 
 import (
 	"github.com/liu-cn/runbox/pkg/jsonx"
-	"github.com/liu-cn/runbox/runner_code/apphub/model/dto"
 	"github.com/liu-cn/runbox/sdk/runner"
+	"github.com/liu-cn/runbox/soft_cmd/beiluo/apphub/model/dto"
 )
 
 func Demo(ctx *runner.Context) {

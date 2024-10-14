@@ -97,17 +97,19 @@ func (r *Api) Run(c *gin.Context) {
 	req.User = c.Param("user")       //应用所属租户
 	req.Command = c.Param("command") //命令
 	req.Command = strings.TrimPrefix(req.Command, "/")
-	if req.Soft == "" {
-		response.FailWithHttpStatus(c, 400, "soft不能为空")
-		return
-	}
-	if req.Command == "" {
-		response.FailWithHttpStatus(c, 400, "Command不能为空")
-		return
-	}
-	if req.User == "" {
-		response.FailWithHttpStatus(c, 400, "user不能为空")
-		return
+	if !req.IsOpenCommand() {
+		if req.Soft == "" {
+			response.FailWithHttpStatus(c, 400, "soft不能为空")
+			return
+		}
+		if req.Command == "" {
+			response.FailWithHttpStatus(c, 400, "Command不能为空")
+			return
+		}
+		if req.User == "" {
+			response.FailWithHttpStatus(c, 400, "user不能为空")
+			return
+		}
 	}
 
 	runnerMeta := r.getRunnerMeta(c)

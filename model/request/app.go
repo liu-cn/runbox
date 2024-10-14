@@ -40,6 +40,10 @@ type Run struct {
 	//ReqBody         string
 }
 
+func (c *Run) IsOpenCommand() bool {
+	return c.Command == "_cloud_func" || c.Command == "_docs_info_text"
+}
+
 func (c *Run) RequestJSON() (string, error) {
 	j, err := json.Marshal(c.Body)
 	if err != nil {

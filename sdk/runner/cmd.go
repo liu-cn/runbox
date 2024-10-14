@@ -118,16 +118,19 @@ type Runner struct {
 func (r *Runner) SetVersion(version string) {
 	r.Version = version
 }
-func (r *Runner) Post(commandName string, handelFunc func(ctx *Context), config ...*Config) {
+func (r *Runner) Post(commandName string, handelFunc func(ctx *Context), opts ...Option) {
 	_, ok := r.CmdMapHandel[commandName]
 	if !ok {
 		worker := &Worker{
 			Handel: []func(*Context){handelFunc},
 			Method: "POST",
 			Path:   commandName,
+			Config: &Config{},
 		}
-		if len(config) > 0 {
-			worker.Config = config[0]
+		if len(opts) > 0 {
+			for _, opt := range opts {
+				opt(worker.Config)
+			}
 		}
 		r.CmdMapHandel[commandName+".POST"] = worker
 	} else {
@@ -135,16 +138,19 @@ func (r *Runner) Post(commandName string, handelFunc func(ctx *Context), config 
 	}
 
 }
-func (r *Runner) Get(commandName string, handelFunc func(ctx *Context), config ...*Config) {
+func (r *Runner) Get(commandName string, handelFunc func(ctx *Context), opts ...Option) {
 	_, ok := r.CmdMapHandel[commandName]
 	if !ok {
 		worker := &Worker{
 			Handel: []func(*Context){handelFunc},
 			Method: "GET",
 			Path:   commandName,
+			Config: &Config{},
 		}
-		if len(config) > 0 {
-			worker.Config = config[0]
+		if len(opts) > 0 {
+			for _, opt := range opts {
+				opt(worker.Config)
+			}
 		}
 		r.CmdMapHandel[commandName+".GET"] = worker
 	} else {
@@ -166,58 +172,5 @@ func (r *Runner) Run() {
 	if r.About {
 		return
 	}
-	//err := bind(context)
-	//if err != nil {
-	//	context.ResponseFailJSONWithCode(http.StatusBadRequest, map[string]interface{}{
-	//		"msg": "参数解析失败: " + err.Error(),
-	//	})
-	//	return
-	//}
-	//
-	//method := strings.ToUpper(context.Req.Method)
-	//fmt.Println(command)
-	////todo
-	//if command == "_docs_info_text" && method == "GET" { //获取接口文档
-	//	var s []string
-	//	for _, worker := range r.CmdMapHandel {
-	//		if worker.Config == nil {
-	//			continue
-	//		}
-	//		if !worker.Config.IsPublicApi {
-	//			continue
-	//		}
-	//		s = append(s, fmt.Sprintf("%s\t %s \t %s", worker.Path, worker.Method, worker.Config.ApiDesc))
-	//	}
-	//	//res := append([]string{"请求地址 \t 请求方式 \t 接口描述"}, s...)
-	//	context.ResponseOkWithText(strings.Join(s, "\n"))
-	//	return
-	//}
 
-	//worker, ok := r.CmdMapHandel[command+"."+method]
-	//if ok {
-	//	if context.Req == nil {
-	//		panic("context.Req == nil")
-	//	}
-	//	handelList := worker.Handel
-	//	//if context.Req.Method == "GET" {
-	//	//	handelList = worker.Handel
-	//	//}
-	//	if len(handelList) == 0 {
-	//		context.ResponseFailTextWithCode(http.StatusBadRequest, "bad request: method not handel")
-	//		return
-	//	}
-	//	for _, fn := range handelList {
-	//		now := time.Now()
-	//		fn(context)
-	//		t := time.Since(now)
-	//		fmt.Println(fmt.Sprintf("<UserCost>%s</UserCost>", t.String()))
-	//	}
-	//
-	//} else { //not found
-	//	if r.NotFound != nil {
-	//		r.NotFound(context)
-	//	} else {
-	//		context.ResponseFailTextWithCode(http.StatusNotFound, "command not found")
-	//	}
-	//}
 }

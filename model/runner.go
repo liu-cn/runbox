@@ -1,6 +1,8 @@
 package model
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Runner struct {
 	StoreRoot  string `json:"store_root"`                                                                          //oss 存储的跟路径

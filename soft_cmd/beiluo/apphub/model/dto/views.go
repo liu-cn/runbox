@@ -20,3 +20,13 @@ type BaseResponse struct {
 	Msg  string      `json:"msg"`
 	Data interface{} `json:"data"`
 }
+
+type StatisticsTextReq struct {
+	Content  string `json:"content" runner:"desc:统计的内容;required:必填;mock_data:zhangsan(张三),lisi(李四),zhangsan,zhangsan"`
+	Keywords string `json:"keywords" runner:"desc:统计的所有关键字;required:必填;mock_data:zhangsan,lisi"`
+	Stp      string `json:"stp" runner:"desc:关键字分割符;mock_data:,"`
+}
+
+type StatisticsTextResp struct {
+	Data string `json:"data" runner:"desc:统计后的数据;mock_data:zhangsan 2 \n lisi 1"`
+}

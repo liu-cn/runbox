@@ -1,7 +1,9 @@
 package strings
 
 import (
+	"fmt"
 	"github.com/liu-cn/runbox/sdk/runner"
+	"github.com/liu-cn/runbox/soft_cmd/beiluo/apphub/model/dto"
 	"strings"
 )
 
@@ -31,4 +33,32 @@ func Split(ctx *runner.Context) {
 			"splitString": join,
 		},
 	})
+}
+
+func WithStatisticsTextOpt() runner.Option {
+	return func(config *runner.Config) {
+		config.Request = dto.StatisticsTextReq{}
+		config.Response = dto.StatisticsTextResp{}
+		config.EnglishName = "strings.keyword.Statistics"
+		config.ChineseName = "字符数量分组统计"
+		config.Tags = "字符统计"
+		config.Classify = "字符串处理"
+		config.ApiDesc = "字符数量分组统计"
+	}
+}
+func StatisticsText(ctx *runner.Context) {
+	var r dto.StatisticsTextReq
+	var resp dto.StatisticsTextResp
+
+	ctx.ShouldBindJSON(&r)
+	if r.Stp == "" {
+		resp.Data = fmt.Sprintf("%s %v", r.Keywords, strings.Count(r.Content, r.Keywords))
+	} else {
+		Keywords := strings.Split(r.Keywords, r.Stp)
+		for _, keyword := range Keywords {
+
+			resp.Data = resp.Data + fmt.Sprintf("%s %v\n", keyword, strings.Count(r.Content, keyword))
+		}
+	}
+	ctx.OkWithDataJSON(resp)
 }

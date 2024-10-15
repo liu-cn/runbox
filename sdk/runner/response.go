@@ -52,6 +52,18 @@ func (c *Context) ResponseOkWithJSON(jsonEl interface{}) {
 		Body: jsonEl}
 	c.response(jsonx.String(rsp))
 }
+
+func (c *Context) OkWithDataJSON(data interface{}) {
+	rsp := &response.CallResponse{
+		StatusCode: 200,
+		Header: map[string]string{
+			"Content-Type": content_type.ApplicationJsonCharsetUtf8,
+		},
+		//ContentType: content_type.ApplicationJsonCharsetUtf8,
+		Body: map[string]interface{}{"data": data, "code": 0, "msg": "ok"}}
+	c.response(jsonx.String(rsp))
+}
+
 func (c *Context) ResponseFailParameter() {
 	rsp := &response.CallResponse{
 		StatusCode: 200,

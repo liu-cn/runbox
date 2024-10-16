@@ -25,7 +25,7 @@ func bind(ctx *Context) error {
 type Api struct {
 	Path   string `json:"path"`
 	Method string `json:"method"`
-	Info   Config `json:"info"`
+	Config
 }
 
 func Handel(context *Context, runner *Runner) {
@@ -58,7 +58,7 @@ func Handel(context *Context, runner *Runner) {
 			apis = append(apis, Api{
 				Path:   worker.Path,
 				Method: worker.Method,
-				Info:   *cfg,
+				Config: *cfg,
 			})
 
 			//s = append(s, fmt.Sprintf("%s\t %s \t %s", worker.Path, worker.Method, worker.Config.ApiDesc))

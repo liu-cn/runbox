@@ -79,9 +79,6 @@ func Handel(context *Context, runner *Runner) {
 			if worker.Config == nil {
 				continue
 			}
-			if !worker.Config.IsPublicApi {
-				continue
-			}
 			s = append(s, fmt.Sprintf("%s\t %s \t %s", worker.Path, worker.Method, worker.Config.ApiDesc))
 		}
 		//res := append([]string{"请求地址 \t 请求方式 \t 接口描述"}, s...)

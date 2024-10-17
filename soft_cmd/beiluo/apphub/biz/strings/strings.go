@@ -62,3 +62,22 @@ func StatisticsText(ctx *runner.Context) {
 	}
 	ctx.OkWithDataJSON(resp)
 }
+
+func WithFormatTextToUpperOpt() runner.Option {
+	return func(config *runner.Config) {
+		config.Request = dto.FormatTextToUpperReq{}
+		config.Response = dto.FormatTextToUpperResp{}
+		config.ChineseName = "文本转换大写"
+		config.Tags = "文本处理"
+		config.Classify = "文本处理"
+		config.ApiDesc = "文本处理"
+	}
+}
+func FormatTextToUpper(ctx *runner.Context) {
+	var req dto.FormatTextToUpperReq
+	var resp dto.FormatTextToUpperResp
+	ctx.ShouldBindJSON(&req)
+	req.Text = strings.ToUpper(req.Text)
+	resp.Data = req.Text
+	ctx.OkWithDataJSON(resp)
+}

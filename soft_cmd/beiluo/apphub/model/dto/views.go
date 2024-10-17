@@ -27,6 +27,14 @@ type StatisticsTextReq struct {
 	Stp      string `json:"stp" runner:"desc:关键字分割符;mock_data:,"`
 }
 
+type FormatTextToUpperReq struct {
+	Text string `json:"text" runner:"desc:要格式化的文本;required:必填;mock_data:ABCd1"`
+}
+
+type FormatTextToUpperResp struct {
+	Data string `json:"data" runner:"desc:转换大写后的文本;mock_data:ABCD1"`
+}
+
 type StatisticsTextResp struct {
 	Data string `json:"data" runner:"desc:统计后的数据;mock_data:zhangsan 2 \n lisi 1"`
 }

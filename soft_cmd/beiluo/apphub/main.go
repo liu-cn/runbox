@@ -22,5 +22,6 @@ func main() {
 	r.Post("table/Demo", table.Demo, runner.WithPublicApi())
 	r.Post("array/SplitJoin", array.SplitJoin, array.WithSplitJoinOpt())
 	r.Post("strings/StatisticsText", strings.StatisticsText, strings.WithStatisticsTextOpt())
+	r.Post("strings/FormatTextToUpper", strings.FormatTextToUpper, strings.WithFormatTextToUpperOpt())
 	r.Run()
 }

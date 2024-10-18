@@ -4,6 +4,7 @@ import (
 	"github.com/liu-cn/runbox/sdk/runner"
 	"github.com/liu-cn/runbox/soft_cmd/beiluo/apphub/biz/array"
 	"github.com/liu-cn/runbox/soft_cmd/beiluo/apphub/biz/images"
+	"github.com/liu-cn/runbox/soft_cmd/beiluo/apphub/biz/sender"
 	"github.com/liu-cn/runbox/soft_cmd/beiluo/apphub/biz/strings"
 	"github.com/liu-cn/runbox/soft_cmd/beiluo/apphub/biz/table"
 )
@@ -23,5 +24,8 @@ func main() {
 	r.Post("array/SplitJoin", array.SplitJoin, array.WithSplitJoinOpt())
 	r.Post("strings/StatisticsText", strings.StatisticsText, strings.WithStatisticsTextOpt())
 	r.Post("strings/FormatTextToUpper", strings.FormatTextToUpper, strings.WithFormatTextToUpperOpt())
+	r.Get("message/Receive", sender.ReceiveMsg, sender.WithReceiveMsgOpt())
+	r.Post("message/Send", sender.SendMsg, sender.WithSendMsgOpt())
+
 	r.Run()
 }

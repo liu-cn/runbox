@@ -157,7 +157,8 @@ func Handel(context *Context, runner *Runner) {
 			now := time.Now()
 			fn(context)
 			t := time.Since(now)
-			fmt.Println(fmt.Sprintf("<UserCost>%s</UserCost>", t.String()))
+			//todo 这里统计函数执行耗时
+			fmt.Println(fmt.Sprintf("<UserCost>%v</UserCost>", t.Nanoseconds()))
 		}
 
 	} else { //not found

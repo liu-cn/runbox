@@ -9,7 +9,7 @@ import (
 
 func NewRunner(runner *model.Runner) Runner {
 	switch runner.ToolType {
-	case "windows", "linux", "macos":
+	case "windows", "linux", "macos", "可执行程序(linux)", "可执行程序(windows)":
 		return NewCmd(runner)
 	case "website":
 		return NewWebSite(runner)

@@ -11,11 +11,13 @@ import (
 	"github.com/liu-cn/runbox/model/response"
 	"github.com/liu-cn/runbox/pkg/store"
 	"github.com/liu-cn/runbox/pkg/stringsx"
+	"github.com/liu-cn/runbox/pkg/timex"
 	"github.com/liu-cn/runbox/runner"
-	"github.com/sirupsen/logrus"
 	"io"
 	"os"
+	"strconv"
 	"strings"
+	"time"
 )
 
 func NewDefaultApi() *Api {
@@ -38,28 +40,41 @@ func (r *Api) getRunnerMeta(c *gin.Context) *model.Runner {
 	return rn
 }
 
+type RuntimeMetaData struct {
+	FuncRunTime  int
+	CallCostTime time.Duration
+}
+
 // GetRunnerLogs softRunTime 程序执行耗时，callCostTime：调用+执行的耗时
-func GetRunnerLogs(callResponse *response.Run) {
+func GetRunnerLogs(callResponse *response.Run) *RuntimeMetaData {
 	//todo 这里应该记录请求用户信息
-	softRunTime := ""
-	softRunTimeList := stringsx.ParserHtmlTagContent(callResponse.ResponseMetaData, "UserCost")
-	if len(softRunTimeList) > 0 {
-		softRunTime = softRunTimeList[0]
-	}
-	logs := stringsx.ParserHtmlTagContent(callResponse.ResponseMetaData, "Logger")
-	for _, v := range logs {
-		mp := make(map[string]interface{})
-		err := json.Unmarshal([]byte(v), &mp)
-		if err != nil {
-			continue
+	//softRunTime := ""
+	r := &RuntimeMetaData{}
+	funcRunTimeList := stringsx.ParserHtmlTagContent(callResponse.ResponseMetaData, "UserCost")
+	if len(funcRunTimeList) > 0 {
+		funcRunTime := funcRunTimeList[0]
+		i, err := strconv.ParseInt(funcRunTime, 10, 64)
+		if err == nil {
+			r.FuncRunTime = int(i)
 		}
-		msg := mp["msg"]
-		delete(mp, "msg")
-		mp["soft_run_time"] = softRunTime
-		mp["call_cost_time"] = callResponse.CallCostTime.String()
-		logrus.WithFields(mp).Info(msg)
-		//	todo 这里可以对接消息队列存储日志数据
 	}
+	r.CallCostTime = callResponse.CallCostTime
+
+	return r
+	//logs := stringsx.ParserHtmlTagContent(callResponse.ResponseMetaData, "Logger")
+	//for _, v := range logs {
+	//	mp := make(map[string]interface{})
+	//	err := json.Unmarshal([]byte(v), &mp)
+	//	if err != nil {
+	//		continue
+	//	}
+	//	msg := mp["msg"]
+	//	delete(mp, "msg")
+	//	mp["soft_run_time"] = softRunTime
+	//	mp["call_cost_time"] = callResponse.CallCostTime.String()
+	//	logrus.WithFields(mp).Info(msg)
+	//	//	todo 这里可以对接消息队列存储日志数据
+	//}
 }
 
 func (r *Api) getReqData(c *gin.Context) (map[string]interface{}, error) {
@@ -147,7 +162,10 @@ func (r *Api) Run(c *gin.Context) {
 		response.FailWithHttpStatus(c, 500, err.Error())
 		return
 	}
-	GetRunnerLogs(getCall) //记录用户日志
+	//记录用户日志
+	runtimeInfo := GetRunnerLogs(getCall)
+	timex.Println(time.Duration(runtimeInfo.FuncRunTime)*time.Nanosecond, "函数执行")
+	timex.Println(runtimeInfo.CallCostTime, "程序调用")
 	if getCall.StatusCode != 200 {
 		c.JSON(getCall.StatusCode, gin.H{
 			"msg": getCall.Body,

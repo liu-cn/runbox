@@ -1,6 +1,11 @@
 package response
 
-import "time"
+import (
+	"github.com/liu-cn/runbox/pkg/stringsx"
+	"github.com/liu-cn/runbox/pkg/timex"
+	"strconv"
+	"time"
+)
 
 type UnInstallInfo struct {
 }
@@ -56,7 +61,7 @@ type Run struct {
 	Header map[string]string `json:"header"` // response header
 
 	//meta data
-	CallCostTime     time.Duration `json:"-"` //
+	CallCostTime     time.Duration `json:"-"` // 执行引擎发起调用到程序执行结束的总耗时
 	ResponseMetaData string        `json:"-"`
 }
 
@@ -65,4 +70,28 @@ func (r *Run) GetContentType() string {
 		return r.Header["Content-Type"]
 	}
 	return ""
+}
+
+type RuntimeMetaData struct {
+	FuncRunTime  int
+	CallCostTime time.Duration
+}
+
+func (r *Run) GetResponseMetaData() *RuntimeMetaData {
+	rm := &RuntimeMetaData{}
+	funcRunTimeList := stringsx.ParserHtmlTagContent(r.ResponseMetaData, "UserCost")
+	if len(funcRunTimeList) > 0 {
+		funcRunTime := funcRunTimeList[0]
+		i, err := strconv.ParseInt(funcRunTime, 10, 64)
+		if err == nil {
+			rm.FuncRunTime = int(i)
+		}
+	}
+	rm.CallCostTime = r.CallCostTime
+
+	return rm
+}
+func (r *RuntimeMetaData) Print() {
+	timex.Println(time.Duration(r.FuncRunTime)*time.Nanosecond, "函数执行")
+	timex.Println(r.CallCostTime, "程序调用")
 }
